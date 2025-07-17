@@ -76,7 +76,7 @@ button:hover {
     background: #273c75;
 }
 
-.completed {
+.done {
     text-decoration: line-through;
     color: #b2bec3;
 }
