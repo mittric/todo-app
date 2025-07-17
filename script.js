@@ -76,31 +76,5 @@ input.addEventListener('keydown', (e) => {
     }
 });
 
-function addTodoItem(text, done = false) {
-    const li = document.createElement('li');
-    li.textContent = text;
-
-    if (done) li.classList.add('done');
-
-    // Erledigt markieren
-    li.addEventListener('click', () => {
-        li.classList.toggle('done');
-        saveTodos();
-    });
-
-    // Löschen-Button
-    const delBtn = document.createElement('button');
-    delBtn.textContent = 'Löschen';
-    delBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        li.remove();
-        saveTodos();
-    });
-
-    li.appendChild(delBtn);
-    todoList.appendChild(li);
-    saveTodos();
-}
-
 // Optional: CSS für erledigte Aufgaben
 // .done { text-decoration: line-through; color: gray; }
