@@ -53,28 +53,65 @@ function addTodoItem(text, done = false) {
 }
 
 // Nach dem Laden der Seite Aufgaben laden
-window.addEventListener('DOMContentLoaded', loadTodos);
+window.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('todo-input');
+    const addBtn = document.getElementById('add-btn');
+    const todoList = document.getElementById('todo-list');
 
-const input = document.getElementById('todo-input');
-const addBtn = document.getElementById('add-btn');
-const todoList = document.getElementById('todo-list');
+    function addTodoItem(text, done = false) {
+        const li = document.createElement('li');
+        li.textContent = text;
 
-// Aufgabe hinzufügen
-addBtn.addEventListener('click', () => {
-    const text = input.value.trim();
-    if (text) {
-        addTodoItem(text);
-        input.value = '';
-        input.focus();
+        if (done) li.classList.add('done');
+
+        li.addEventListener('click', () => {
+            li.classList.toggle('done');
+            saveTodos();
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Löschen';
+        delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            li.remove();
+            saveTodos();
+        });
+
+        li.appendChild(delBtn);
+        todoList.appendChild(li);
+        saveTodos();
     }
-});
 
-// Aufgabe hinzufügen, wenn Enter gedrückt wird
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        addBtn.click();
+    function loadTodos() {
+        const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+        todos.forEach(todo => addTodoItem(todo.text, todo.done));
     }
-});
 
-// Optional: CSS für erledigte Aufgaben
-// .done { text-decoration: line-through; color: gray; }
+    function saveTodos() {
+        const items = [];
+        document.querySelectorAll('#todo-list li').forEach(li => {
+            items.push({
+                text: li.childNodes[0].textContent,
+                done: li.classList.contains('done')
+            });
+        });
+        localStorage.setItem('todos', JSON.stringify(items));
+    }
+
+    addBtn.addEventListener('click', () => {
+        const text = input.value.trim();
+        if (text) {
+            addTodoItem(text);
+            input.value = '';
+            input.focus();
+        }
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            addBtn.click();
+        }
+    });
+
+    loadTodos();
+});
