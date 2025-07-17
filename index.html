@@ -1,5 +1,49 @@
 // a comment
 <!DOCTYPE html>
+<script>
+    // Lade Todos aus localStorage und rendere sie beim Start
+    document.addEventListener('DOMContentLoaded', function() {
+        const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+        todos.forEach(todo => addTodo(todo.text, todo.completed));
+    });
+
+    // Überschreibe addTodo, damit sie completed-Status akzeptiert
+    function addTodo(text, completed = false) {
+        const li = document.createElement('li');
+        li.appendChild(document.createTextNode(text));
+        if (completed) li.classList.add('completed');
+
+        li.addEventListener('click', function() {
+            li.classList.toggle('completed');
+            saveTodos();
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Löschen';
+        delBtn.className = 'delete-btn';
+        delBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            li.remove();
+            saveTodos();
+        });
+
+        li.appendChild(delBtn);
+        document.getElementById('todo-list').appendChild(li);
+        saveTodos();
+    }
+
+    // Speichere Todos im localStorage
+    function saveTodos() {
+        const items = [];
+        document.querySelectorAll('#todo-list li').forEach(li => {
+            items.push({
+                text: li.childNodes[0].nodeValue,
+                completed: li.classList.contains('completed')
+            });
+        });
+        localStorage.setItem('todos', JSON.stringify(items));
+    }
+</script>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
