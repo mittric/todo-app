@@ -85,33 +85,53 @@
         const input = document.getElementById('todo-input');
         const list = document.getElementById('todo-list');
 
+        // Todos aus dem Local Storage laden
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        renderTodos();
+
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const text = input.value.trim();
             if (text !== '') {
-                addTodo(text);
+                todos.push({ text, completed: false });
+                saveTodos();
+                renderTodos();
                 input.value = '';
             }
         });
 
-        function addTodo(text) {
-            const li = document.createElement('li');
-            li.appendChild(document.createTextNode(text));
+        function renderTodos() {
+            list.innerHTML = '';
+            todos.forEach((todo, idx) => {
+                const li = document.createElement('li');
+                li.textContent = todo.text;
+                if (todo.completed) {
+                    li.classList.add('completed');
+                }
 
-            li.addEventListener('click', function() {
-                li.classList.toggle('completed');
+                li.addEventListener('click', function() {
+                    todos[idx].completed = !todos[idx].completed;
+                    saveTodos();
+                    renderTodos();
+                });
+
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Löschen';
+                delBtn.className = 'delete-btn';
+                delBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    todos.splice(idx, 1);
+                    saveTodos();
+                    renderTodos();
+                });
+
+                li.appendChild(delBtn);
+                list.appendChild(li);
             });
+        }
 
-            const delBtn = document.createElement('button');
-            delBtn.textContent = 'Löschen';
-            delBtn.className = 'delete-btn';
-            delBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                li.remove();
-            });
-
-            li.appendChild(delBtn);
-            list.appendChild(li);
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
         }
     </script>
 </body>
